@@ -1,6 +1,7 @@
 ## extensions
 *.*
 LICENSE
+!*.cjs
 !*.js
 !*.json
 !*.md

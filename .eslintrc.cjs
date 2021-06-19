@@ -5,15 +5,19 @@ module.exports = {
   },
   overrides: [
     {
-      files: ["src/pages/**"],
+      files: ["**/*.cjs"],
+      env: { node: true },
+    },
+    {
+      files: ["src/commands/**"],
       rules: {
-        "import/no-default-export": "off",
+        "no-console": "off",
       },
     },
     {
-      files: ["cli/**"],
+      files: ["src/pages/**"],
       rules: {
-        "@typescript-eslint/no-var-requires": "off",
+        "import/no-default-export": "off",
       },
     },
   ],

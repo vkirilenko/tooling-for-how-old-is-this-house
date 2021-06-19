@@ -1,8 +1,9 @@
 {
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "exe": "ts-node --transpile-only --project=tsconfig.build.json --compiler-options \"{\\\"noEmit\\\":true}\"",
+    "exe": "node --loader=ts-node/esm/transpile-only --experimental-specifier-resolution=node",
     "fix": "npm-run-all --continue-on-error \"fix:*\"",
     "fix:eslint": "eslint --fix \"**/*\"",
     "fix:markdownlint": "markdownlint --fix \"**/*\"",
