@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios";
 import axiosRetry from "axios-retry";
-import FormData from "form-data";
 import https from "https";
 
 const axiosInstance = axios.create({
@@ -23,30 +22,9 @@ export const fetchJsonFromRosreestr = async <T>(
   url: string,
   params?: Record<string, unknown>,
 ): Promise<AxiosResponse<T>> => {
-  const formData = new FormData();
-  // console.log(params);
-
-  Object.entries(params ?? {}).forEach(([key, value]) => {
-    formData.append(key, `${value}`);
-  });
-
-  const result = await axiosInstance.post<T>(url, formData, {
+  return await axiosInstance.get<T>(url, {
+    params,
     responseType: "json",
     timeout: 5000,
-    headers: {
-      "user-agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36",
-      referer: "https://pkk.rosreestr.ru/",
-      origin: "https://pkk.rosreestr.ru",
-      ...formData.getHeaders(),
-    },
   });
-
-  formData.destroy();
-
-  // console.log("HHHH", result.request, "BBBB", result.request?.body);
-
-  // console.log(result);
-
-  return result;
 };
