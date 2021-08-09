@@ -93,14 +93,12 @@ export const generateProcessTile = (
     // noop – proceeding with actual fetching
   }
 
-  const tileExtentGeometry = turf.geometryCollection([
-    turf.bboxPolygon(
-      addBufferToBbox(
-        tilebelt.tileToBBOX(tile) as turf.BBox,
-        getTileBufferInMeters(tile[2]),
-      ),
-    ).geometry,
-  ]).geometry;
+  const tileExtentGeometry = turf.bboxPolygon(
+    addBufferToBbox(
+      tilebelt.tileToBBOX(tile) as turf.BBox,
+      getTileBufferInMeters(tile[2]),
+    ),
+  ).geometry;
 
   if (!tileExtentGeometry) {
     throw new Error("Unexpected empty geometry");
@@ -112,8 +110,8 @@ export const generateProcessTile = (
         featureNumericIdLookup[objectType]
       }?_=${DateTime.now().toMillis()}`,
       {
-        nameTab: undefined,
-        indexTab: undefined,
+        // nameTab: undefined,
+        // indexTab: undefined,
         inBounds: true,
         limit: maxSupportedFeaturesPerTileRequest,
         searchInUserObjects: true,
