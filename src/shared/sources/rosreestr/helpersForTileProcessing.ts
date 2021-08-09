@@ -1,6 +1,7 @@
 import * as tilebelt from "@mapbox/tilebelt";
 import * as turf from "@turf/turf";
 import fs from "fs-extra";
+import { DateTime } from "luxon";
 import sortKeys from "sort-keys";
 
 import { addBufferToBbox } from "../../helpersForGeometry";
@@ -35,12 +36,6 @@ const featureNumericIdLookup: Record<RosreestrObjectType, number> = {
 export const deriveRosreestrTileDataStatus = (
   tileData: RosreestrTileData,
 ): TileStatus => {
-  // Hotfix for https://github.com/kachkaev/tooling-for-how-old-is-this-house/issues/16
-  // Until we can bring the old API behaviour, we do a hard stop at zoom level 15.
-  if (tileData.tile[2] === 15) {
-    return "complete";
-  }
-
   const numberOfFeatures = tileData.response.features.length;
   if (numberOfFeatures > maxSupportedFeaturesPerTileRequest) {
     throw new Error(`Unexpected number of features ${numberOfFeatures}`);
@@ -98,12 +93,14 @@ export const generateProcessTile = (
     // noop – proceeding with actual fetching
   }
 
-  const tileExtentGeometry = turf.bboxPolygon(
-    addBufferToBbox(
-      tilebelt.tileToBBOX(tile) as turf.BBox,
-      getTileBufferInMeters(tile[2]),
-    ),
-  ).geometry;
+  const tileExtentGeometry = turf.geometryCollection([
+    turf.bboxPolygon(
+      addBufferToBbox(
+        tilebelt.tileToBBOX(tile) as turf.BBox,
+        getTileBufferInMeters(tile[2]),
+      ),
+    ).geometry,
+  ]).geometry;
 
   if (!tileExtentGeometry) {
     throw new Error("Unexpected empty geometry");
@@ -111,11 +108,18 @@ export const generateProcessTile = (
 
   const rawTileResponse = (
     await fetchJsonFromRosreestr<RawRosreestrTileResponse>(
-      `https://pkk.rosreestr.ru/api/features/${featureNumericIdLookup[objectType]}`,
+      `https://pkk.rosreestr.ru/api/features/${
+        featureNumericIdLookup[objectType]
+      }?_=${DateTime.now().toMillis()}`,
       {
-        sq: JSON.stringify(tileExtentGeometry),
-        tolerance: 100,
+        nameTab: undefined,
+        indexTab: undefined,
+        inBounds: true,
         limit: maxSupportedFeaturesPerTileRequest,
+        searchInUserObjects: true,
+        skip: 0,
+        sq: JSON.stringify(tileExtentGeometry),
+        tolerance: 8,
       },
     )
   ).data;

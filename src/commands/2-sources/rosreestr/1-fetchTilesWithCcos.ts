@@ -9,7 +9,7 @@ export const fetchTilesWithCcos: Command = async ({ logger }) => {
   logger.log(chalk.bold("sources/rosreestr: Fetching tiles with CCOs"));
 
   await processTiles({
-    initialZoom: 13,
+    initialZoom: 14,
     maxAllowedZoom: 24,
     territoryExtent: await getTerritoryExtent(),
     processTile: generateProcessTile("cco"),
